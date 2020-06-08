@@ -30,6 +30,10 @@ import androidx.lifecycle.LifecycleObserver
 import com.example.android.dessertpusher.databinding.ActivityMainBinding
 import timber.log.Timber
 
+const val KEY_REVENUE = "key_revenue"
+const val KEY_DESSERT_SOLD = "key_dessert_sold"
+const val KEY_DESSERT_TIMER = "key_dessert_timer"
+
 class MainActivity : AppCompatActivity(), LifecycleObserver {
 
     private var revenue = 0
@@ -82,6 +86,24 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
 
         dessertTimer = DessertTimer(this.lifecycle)
 
+        //restore across rebootsnot working apparently
+
+        /*if(outPersistentState != null)
+        {
+            Timber.i("Inside OnCreate savedInstanceState != null")
+            revenue = outPersistentState?.getInt(KEY_REVENUE)!!
+            dessertTimer.secondsCount = outPersistentState?.getInt(KEY_DESSERT_TIMER)!!
+            dessertsSold = outPersistentState?.getInt(KEY_DESSERT_SOLD)!!
+        }*/
+
+        if(savedInstanceState != null)
+        {
+            Timber.i("Inside OnCreate savedInstanceState != null")
+            revenue = savedInstanceState.getInt(KEY_REVENUE)
+            dessertTimer.secondsCount = savedInstanceState.getInt(KEY_DESSERT_TIMER)
+            dessertsSold = savedInstanceState.getInt(KEY_DESSERT_SOLD)
+        }
+
         // Set the TextViews to the right values
         binding.revenue = revenue
         binding.amountSold = dessertsSold
@@ -128,10 +150,24 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
         Timber.i("Inside onSaveInstanceState")
+        Timber.i("Inside onSaveInstanceState "+ revenue +" "+dessertsSold+" "+dessertTimer.secondsCount)
 
+        outState.putInt(KEY_REVENUE , revenue)
+        outState.putInt(KEY_DESSERT_SOLD , dessertsSold)
+        outState.putInt(KEY_DESSERT_TIMER , dessertTimer.secondsCount)
     }
+
+
+    /*override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        super.onSaveInstanceState(outState, outPersistentState)
+
+        Timber.i("Inside onSaveInstanceState with PersistableBundle")
+
+        outPersistentState?.putInt(KEY_REVENUE , revenue)
+        outPersistentState?.putInt(KEY_DESSERT_SOLD , dessertsSold)
+        outPersistentState?.putInt(KEY_DESSERT_TIMER , dessertTimer.secondsCount)
+    }*/
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
